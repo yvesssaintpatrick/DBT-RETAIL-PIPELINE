@@ -1,48 +1,90 @@
+DBT-RETAIL-PIPELINE
 Overview
 ========
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+The DBT-RETAIL-PIPELINE project implements a comprehensive data pipeline for retail data using Apache Airflow, DBT (Data Build Tool), and Google Cloud Platform (GCP) services. This pipeline is designed to automate the ETL (Extract, Transform, Load) process, ensuring efficient data processing, quality checks, and reporting.Key components include Astro CLI for Airflow management, Astro SDK for data ingestion, and Cosmos for DBT integration.
 
-Project Contents
+Project Architecture
+The project leverages a modular architecture to streamline data processing and analysis:
 ================
 
-Your Astro project contains the following files and folders:
+Data Flow
+1. Data Ingestion:
+    * Raw retail data is uploaded to Google Cloud Storage (GCS).
+2. Data Loading:
+    * The data is loaded from GCS into BigQuery.
+3. Data Transformation:
+    * DBT models transform the data, creating structured tables and reports.
+4. Data Quality Checks:
+    * Soda checks ensure the integrity and accuracy of the data.
+5. Reporting:
+    * Final reports are generated using DBT models, providing insights into retail operations.
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+Components
+1. Apache Airflow DAG
+    * Purpose: Orchestrates the ETL process, managing dependencies between tasks and scheduling.
+    * Key Tasks:
+        * Upload CSV to GCS: Transfers raw data from local storage to Google Cloud Storage.
+        * Create BigQuery Dataset: Sets up the dataset in BigQuery.
+        * Load Data from GCS to BigQuery: Imports the data from GCS into BigQuery.
+        * Data Quality Checks: Executes data quality checks using Soda.
+        * DBT Transformations: Performs data transformation and reporting using DBT.
+2. DBT Models
+    * Purpose: Defines data transformations and reporting queries.
+    * Location: Located in the models and transform folders.
+    * Key Files:
+        * report: Contains SQL queries for generating reports on country invoices, product sales, and monthly revenue.
+        * transform: Includes SQL transformations for cleaning and structuring data.
+3. Soda Checks
+    * Purpose: Validates data quality by checking for missing values and other anomalies.
+    * Location: Located in the checks folder.
+    * Key Files:
+        * report_customer_invoices.yml: Checks for missing country values and total invoice counts.
+        * report_product_invoices.yml: Validates product stock codes and quantities sold.
+        * report_year_invoices.yml: Ensures non-negative invoice counts.
+4. Dockerfile
+    * Purpose: Creates a Docker image with the necessary environment for running Airflow and DBT.
+    * Includes:
+        * Virtual environments for Soda and DBT.
+        * Installation of required packages.
+5. Encoding Script
+    * Purpose: Handles CSV file encoding issues to ensure data integrity.
+    * Key Functions:
+        * Reads CSV files with different encodings.
+        * Saves the corrected file in UTF-8 encoding.
 
-Deploy Your Project Locally
+Potential Issues and Solutions
 ===========================
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+1. Encoding Errors:
+    * Issue: CSV files may have encoding issues.
+    * Solution: Use encoding.py to handle different encodings and save the file in UTF-8.
+2. Dependency Issues:
+    * Issue: Conflicts or missing dependencies may arise.
+    * Solution: Ensure all dependencies are listed in the Dockerfile and install them in isolated environments.
+3. GCP Connections:
+    * Issue: Issues with GCP connections can occur.
+    * Solution: Verify GCP credentials and ensure service roles for service accounts have the necessary permissions.
+4. Service Roles and Permissions:
+    * Issue: Insufficient permissions for GCP resources.
+    * Solution: Assign appropriate IAM roles to the service accounts used by Airflow and other services.
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
-
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
-
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
-
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
-
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
-
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
-
-Deploy Your Project to Astronomer
+Future Add-Ons
 =================================
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+1. Real-Time Data Processing:
+    * Integrate Apache Kafka or AWS Kinesis for streaming data.
+2. Advanced Analytics:
+    * Implement machine learning models using AWS SageMaker or Google AI Platform for advanced analytics.
+3. Enhanced Dashboarding:
+    * Use visualization tools like Tableau or Power BI for advanced reporting and dashboards.
+4. Automated Reporting:
+    * Set up automated reporting using tools like IBM Cognos Analytics or Google Data Studio.
 
-Contact
-=======
+<img width="1470" alt="Screenshot 2024-08-05 at 4 28 27 AM" src="https://github.com/user-attachments/assets/b3ba914f-45e2-4eaa-946e-2ea5d3f73451">
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+
+<img width="1470" alt="Screenshot 2024-08-05 at 4 37 39 AM" src="https://github.com/user-attachments/assets/619b7e91-dbf9-40b2-8cae-65be8b922763">
+
+
+<img width="1470" alt="Screenshot 2024-08-05 at 4 43 52 AM" src="https://github.com/user-attachments/assets/9460e9bc-2ce4-4eaf-9317-eee8a42ed66b">
