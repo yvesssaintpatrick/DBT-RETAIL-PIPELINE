@@ -1,10 +1,12 @@
 DBT-RETAIL-PIPELINE
+
 Overview
 ========
 
 The DBT-RETAIL-PIPELINE project implements a comprehensive data pipeline for retail data using Apache Airflow, DBT (Data Build Tool), and Google Cloud Platform (GCP) services. This pipeline is designed to automate the ETL (Extract, Transform, Load) process, ensuring efficient data processing, quality checks, and reporting.Key components include Astro CLI for Airflow management, Astro SDK for data ingestion, and Cosmos for DBT integration.
 
 Project Architecture
+
 The project leverages a modular architecture to streamline data processing and analysis:
 ================
 
